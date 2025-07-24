@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Button, Platform, StyleSheet } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -8,6 +8,7 @@ import { ThemedView } from '@/components/ThemedView';
 
 import AntDesign from '@expo/vector-icons/AntDesign';
 import React, { useState } from 'react';
+import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 import { Dropdown } from 'react-native-element-dropdown';
 
 export default function HomeScreen() {
@@ -62,6 +63,26 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <CountdownCircleTimer
+          isPlaying
+          duration={90}
+          colors={['#004777', '#F7B801', '#A30000', '#A30000']}
+          colorsTime={[90, 60, 30, 0]}
+          strokeWidth={24}
+          strokeLinecap={"butt"}
+          onComplete={() => {
+            return { shouldRepeat: true, delay: 1.5 } // repeat animation in 1.5 seconds
+          }}
+          onUpdate={(remainingTime: number) => {if(remainingTime == 60){console.log(remainingTime)}}}
+        >
+          {({ remainingTime }) => <ThemedText>{remainingTime}</ThemedText>}
+        </CountdownCircleTimer>
+        <Button
+          title="Press me"
+          onPress={() => console.log('Simple Button pressed')}
+        />
         <Dropdown
           style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
           placeholderStyle={styles.placeholderStyle}
