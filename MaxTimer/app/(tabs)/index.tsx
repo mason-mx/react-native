@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Button, Platform, StyleSheet } from 'react-native';
+import { Alert, Button, Platform, StyleSheet } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -7,9 +7,16 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 import AntDesign from '@expo/vector-icons/AntDesign';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 import { Dropdown } from 'react-native-element-dropdown';
+
+import {
+  getAlbumsAsync,
+  getAssetsAsync,
+  getPermissionsAsync,
+  requestPermissionsAsync,
+} from "expo-music-library";
 
 export default function HomeScreen() {
   const [value, setValue] = useState(null);
@@ -19,6 +26,57 @@ export default function HomeScreen() {
     { label: 'Item 3', value: '3' }
   ];
   const [isFocus, setIsFocus] = useState(false);
+
+  const [musicFiles, setMusicFiles] = useState([])
+  const [albums, setAlbums] = useState(null);
+  const [hasPermission, setHasPermission] = useState(false);
+
+  useEffect(() => {
+    loadMusicData();
+  }, []);
+
+  const loadMusicData = async () => {
+    try {
+      // Check existing permissions
+      const { status } = await getPermissionsAsync();
+
+      if (status !== "granted") {
+        // Request permissions
+        const { status: newStatus } = await requestPermissionsAsync();
+        if (newStatus !== "granted") {
+          Alert.alert(
+            "Permission Required",
+            "Please grant music library access to continue."
+          );
+          return;
+        }
+      }
+
+      setHasPermission(true);
+
+      // Load music files
+      const assets = await getAssetsAsync({
+        first: 20,
+        sortBy: ["creationTime"],
+      });
+      setMusicFiles(assets.assets);
+
+      // Load albums
+      const albumsData = await getAlbumsAsync();
+      setAlbums(albumsData);
+    } catch (error) {
+      console.error("Error loading music data:", error);
+      Alert.alert("Error", "Failed to load music data");
+    }
+  };
+
+  if (!hasPermission) {
+    return (
+      <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ThemedText>Requesting music library permissions...</ThemedText>
+      </ThemedView>
+    );
+  }
 
   return (
     <ParallaxScrollView

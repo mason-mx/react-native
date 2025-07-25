@@ -33,6 +33,14 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-music-library",
+        {
+          "musicLibraryPermission": "Allow $(PRODUCT_NAME) to access your music library to play and organize your music.",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone for recording audio.",
+          "photoLibraryPermission": "Allow $(PRODUCT_NAME) to access your photo library to manage music artwork."
+        }
       ]
     ],
     "experiments": {
